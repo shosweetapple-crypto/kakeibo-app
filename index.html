@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>家計簿アプリ</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>家計簿アプリ</h1>
+
+  <div class="card">
+    <input id="date" type="date">
+
+    <select id="type">
+      <option value="支出">支出</option>
+      <option value="収入">収入</option>
+    </select>
+
+    <select id="category">
+      <option>食費</option>
+      <option>日用品</option>
+      <option>交通費</option>
+      <option>住居費</option>
+      <option>娯楽</option>
+      <option>給料</option>
+      <option>その他</option>
+    </select>
+
+    <select id="person">
+      <option>夫</option>
+      <option>妻</option>
+      <option>共通</option>
+    </select>
+
+    <input id="item" placeholder="内容">
+    <input id="amount" type="number" placeholder="金額">
+
+    <button onclick="addData()">追加</button>
+    <button onclick="downloadCSV()">CSV出力</button>
+  </div>
+
+  <div class="summary">
+    <p>今月の収入：<span id="income">0</span>円</p>
+    <p>今月の支出：<span id="expense">0</span>円</p>
+    <p>今月の残り：<span id="balance">0</span>円</p>
+  </div>
+
+  <h2>カテゴリ別支出グラフ</h2>
+  <div id="graph"></div>
+
+  <h2>一覧</h2>
+  <ul id="list"></ul>
+
+  <script src="app.js"></script>
+</body>
+</html>
