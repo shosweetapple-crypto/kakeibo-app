@@ -80,7 +80,7 @@ function nextMonth() {
 
 function showData() {
   const displayMonth = selectedMonth;
-  
+
   const currentMonthDisplay =
     document.getElementById("currentMonthDisplay");
 
@@ -108,8 +108,8 @@ function showData() {
   let husbandIncome = 0;
   let wifeIncome = 0;
 
-let husbandExpense = 0;
-let wifeExpense = 0;
+  let husbandExpense = 0;
+  let wifeExpense = 0;
 
   data.forEach((d, index) => {
     const dataMonth = getMonth(d.date);
@@ -137,49 +137,45 @@ let wifeExpense = 0;
       li.innerHTML = `
         ${d.date}<br>
         ${d.type} / ${d.category} / ${d.person}<br>
-        ${d.item}：${d.amount}円
+        ${d.item}：${d.amount.toLocaleString()}円
         <button class="delete" onclick="deleteData(${index})">削除</button>
       `;
       list.appendChild(li);
     }
 
-   if (
-  dataMonth === displayMonth &&
-  d.type === "支出"
-)
-{
-  if (d.person === "夫") {
-    husbandExpense += d.amount;
-  }
+    if (dataMonth === displayMonth && d.type === "支出") {
+      if (d.person === "夫") {
+        husbandExpense += d.amount;
+      }
 
-  if (d.person === "妻") {
-    wifeExpense += d.amount;
-  }
-}
+      if (d.person === "妻") {
+        wifeExpense += d.amount;
+      }
+
+      if (d.person === "共通") {
+        husbandExpense += d.amount / 2;
+        wifeExpense += d.amount / 2;
+      }
+    }
   });
 
- const husbandAmount =
-  husbandIncome / 2 -
-  husbandExpense;
-
-const wifeAmount =
-  wifeIncome / 2 -
-  wifeExpense;
+  const husbandAmount = husbandIncome / 2 - husbandExpense;
+  const wifeAmount = wifeIncome / 2 - wifeExpense;
   const totalDeposit = husbandAmount + wifeAmount;
 
-  income.textContent = incomeTotal;
-  expense.textContent = expenseTotal;
-  husbandDeposit.textContent = husbandAmount;
-  wifeDeposit.textContent = wifeAmount;
-  balance.textContent = totalDeposit;
+  income.textContent = incomeTotal.toLocaleString();
+  expense.textContent = expenseTotal.toLocaleString();
+  husbandDeposit.textContent = husbandAmount.toLocaleString();
+  wifeDeposit.textContent = wifeAmount.toLocaleString();
+  balance.textContent = totalDeposit.toLocaleString();
 
   const div = document.createElement("div");
   div.className = "card";
   div.innerHTML = `
     <strong>${displayMonth}</strong><br>
-    夫の入金額：${husbandAmount}円<br>
-    妻の入金額：${wifeAmount}円<br>
-    合計入金額：${totalDeposit}円
+    夫の入金額：${husbandAmount.toLocaleString()}円<br>
+    妻の入金額：${wifeAmount.toLocaleString()}円<br>
+    合計入金額：${totalDeposit.toLocaleString()}円
   `;
   monthlyDeposits.appendChild(div);
 
@@ -191,7 +187,8 @@ const wifeAmount =
 
     bar.className = "bar";
     bar.style.width = width + "%";
-    bar.textContent = `${category}：${categoryTotal[category]}円`;
+    bar.textContent =
+      `${category}：${categoryTotal[category].toLocaleString()}円`;
 
     graph.appendChild(bar);
   }
