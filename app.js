@@ -20,18 +20,6 @@ function addData() {
 
 function saveData() {
   localStorage.setItem("kakeibo", JSON.stringify(data));
-
-  const now = new Date();
-
-  const updateTime =
-    now.getFullYear() + "/" +
-    String(now.getMonth() + 1).padStart(2, "0") + "/" +
-    String(now.getDate()).padStart(2, "0") + " " +
-    String(now.getHours()).padStart(2, "0") + ":" +
-    String(now.getMinutes()).padStart(2, "0") + ":" +
-    String(now.getSeconds()).padStart(2, "0");
-
-  localStorage.setItem("lastUpdated", updateTime);
 }
 
 function deleteData(index) {
@@ -44,30 +32,13 @@ function getMonth(date) {
   return date.slice(0, 7);
 }
 
-function getThisMonth() {
-  const d = new Date();
-  const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, "0");
-  return `${year}-${month}`;
-}
-
-function getPreviousMonth(monthText) {
-  const [year, month] = monthText.split("-").map(Number);
-
-  let prevYear = year;
-  let prevMonth = month - 1;
-
-  if (prevMonth === 0) {
-    prevYear -= 1;
-    prevMonth = 12;
-  }
-
-  return `${prevYear}-${String(prevMonth).padStart(2, "0")}`;
+function getPreviousMonth(month) {
+  const [year, m] = month.split("-").map(Number);
+  const d = new Date(year, m - 2, 1);
+  return d.toISOString().slice(0, 7);
 }
 
 function showData() {
-  const lastUpdated = document.getElementById("lastUpdated");
-  const recordCount = document.getElementById("recordCount");
   const list = document.getElementById("list");
   const income = document.getElementById("income");
   const expense = document.getElementById("expense");
@@ -77,20 +48,12 @@ function showData() {
   const wifeDeposit = document.getElementById("wifeDeposit");
   const monthlyDeposits = document.getElementById("monthlyDeposits");
 
-  if (lastUpdated) {
-    lastUpdated.textContent =
-      localStorage.getItem("lastUpdated") || "未更新";
-  }
-
-  if (recordCount) {
-    recordCount.textContent = data.length;
-  }
-
   list.innerHTML = "";
   graph.innerHTML = "";
   monthlyDeposits.innerHTML = "";
 
-  const thisMonth = getThisMonth();
+  const now = new Date();
+  const thisMonth = now.toISOString().slice(0, 7);
   const lastMonth = getPreviousMonth(thisMonth);
 
   let incomeTotal = 0;
@@ -175,6 +138,7 @@ function showData() {
   husbandDeposit.textContent = husbandAmount;
   wifeDeposit.textContent = wifeAmount;
 
+  // B案：今月の残り＝共通口座への入金予定額
   balance.textContent = totalDeposit;
 
   const sortedMonths = Object.keys(months).sort();
@@ -221,11 +185,9 @@ function showData() {
   for (let category in categoryTotal) {
     const bar = document.createElement("div");
     const width = categoryTotal[category] / max * 100;
-
     bar.className = "bar";
     bar.style.width = width + "%";
     bar.textContent = `${category}：${categoryTotal[category]}円`;
-
     graph.appendChild(bar);
   }
 }
