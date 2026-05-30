@@ -7,11 +7,9 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
   <h1>家計簿アプリ</h1>
 
   <div class="card">
-
     <input id="date" type="date">
 
     <select id="type">
@@ -36,102 +34,33 @@
     </select>
 
     <input id="item" placeholder="内容">
+    <input id="amount" type="number" placeholder="金額">
 
-    <input
-      id="amount"
-      type="number"
-      placeholder="金額"
-    >
-
-    <button onclick="addData()">
-      追加
-    </button>
-
-    <button onclick="downloadCSV()">
-      CSV出力
-    </button>
-
+    <button onclick="addData()">追加</button>
+    <button onclick="downloadCSV()">CSV出力</button>
   </div>
 
   <div class="summary">
-
-    <p>
-      最終更新：
-      <span id="lastUpdated">
-        未更新
-      </span>
-    </p>
-
-    <p>
-      登録件数：
-      <span id="recordCount">
-        0
-      </span>
-      件
-    </p>
-
-    <p>
-      今月の収入：
-      <span id="income">
-        0
-      </span>
-      円
-    </p>
-
-    <p>
-      今月の支出：
-      <span id="expense">
-        0
-      </span>
-      円
-    </p>
-
-    <p>
-      共通口座への入金予定額：
-      <span id="balance">
-        0
-      </span>
-      円
-    </p>
+    <p>今月の収入：<span id="income">0</span>円</p>
+    <p>今月の支出：<span id="expense">0</span>円</p>
+    <p>共通口座への入金予定額：<span id="balance">0</span>円</p>
 
     <hr>
 
     <h2>月末の共通口座入金額</h2>
-
-    <p>
-      夫の入金額：
-      <span id="husbandDeposit">
-        0
-      </span>
-      円
-    </p>
-
-    <p>
-      妻の入金額：
-      <span id="wifeDeposit">
-        0
-      </span>
-      円
-    </p>
+    <p>夫の入金額：<span id="husbandDeposit">0</span>円</p>
+    <p>妻の入金額：<span id="wifeDeposit">0</span>円</p>
 
     <h2>月ごとの入金一覧</h2>
-
     <div id="monthlyDeposits"></div>
-
   </div>
 
-  <h2>今月の出費 円グラフ</h2>
-  <canvas id="pieChart"></canvas>
-
-  <h2>年間の出費グラフ</h2>
-  <canvas id="yearChart"></canvas>
+  <h2>カテゴリ別支出グラフ</h2>
+  <div id="graph"></div>
 
   <h2>一覧</h2>
-
   <ul id="list"></ul>
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="app.js"></script>
-
 </body>
 </html>
