@@ -32,10 +32,25 @@ function getMonth(date) {
   return date.slice(0, 7);
 }
 
-function getPreviousMonth(month) {
-  const [year, m] = month.split("-").map(Number);
-  const d = new Date(year, m - 2, 1);
-  return d.toISOString().slice(0, 7);
+function getThisMonth() {
+  const d = new Date();
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  return `${year}-${month}`;
+}
+
+function getPreviousMonth(monthText) {
+  const [year, month] = monthText.split("-").map(Number);
+
+  let prevYear = year;
+  let prevMonth = month - 1;
+
+  if (prevMonth === 0) {
+    prevYear -= 1;
+    prevMonth = 12;
+  }
+
+  return `${prevYear}-${String(prevMonth).padStart(2, "0")}`;
 }
 
 function showData() {
@@ -52,8 +67,7 @@ function showData() {
   graph.innerHTML = "";
   monthlyDeposits.innerHTML = "";
 
-  const now = new Date();
-  const thisMonth = now.toISOString().slice(0, 7);
+  const thisMonth = getThisMonth();
   const lastMonth = getPreviousMonth(thisMonth);
 
   let incomeTotal = 0;
@@ -138,7 +152,6 @@ function showData() {
   husbandDeposit.textContent = husbandAmount;
   wifeDeposit.textContent = wifeAmount;
 
-  // B案：今月の残り＝共通口座への入金予定額
   balance.textContent = totalDeposit;
 
   const sortedMonths = Object.keys(months).sort();
