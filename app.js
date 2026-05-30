@@ -179,4 +179,16 @@ function downloadCSV() {
   link.click();
 }
 
-showData();
+window.addEventListener("load", function () {
+  const selectedMonthInput = document.getElementById("selectedMonth");
+
+  if (selectedMonthInput) {
+    selectedMonthInput.value = getThisMonth();
+
+    selectedMonthInput.addEventListener("change", function () {
+      showData();
+    });
+  }
+
+  showData();
+});
