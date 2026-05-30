@@ -39,7 +39,10 @@
     <button onclick="addData()">追加</button>
     <button onclick="downloadCSV()">CSV出力</button>
   </div>
-
+  <div class="card">
+  <label for="selectedMonth">表示月を選択</label>
+  <input id="selectedMonth" type="month" onchange="showData()">
+</div>
   <div class="summary">
     <p>今月の収入：<span id="income">0</span>円</p>
     <p>今月の支出：<span id="expense">0</span>円</p>
