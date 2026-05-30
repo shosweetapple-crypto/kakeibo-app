@@ -1,0 +1,59 @@
+body {
+  font-family: sans-serif;
+  max-width: 600px;
+  margin: auto;
+  padding: 16px;
+  background: #f5f5f5;
+}
+
+h1, h2 {
+  text-align: center;
+}
+
+.card, .summary {
+  background: white;
+  padding: 16px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 8px #ccc;
+}
+
+input, select, button {
+  width: 100%;
+  padding: 12px;
+  margin: 6px 0;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+button {
+  background: #007aff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+}
+
+ul {
+  padding: 0;
+}
+
+li {
+  list-style: none;
+  background: white;
+  margin-bottom: 8px;
+  padding: 12px;
+  border-radius: 8px;
+}
+
+.delete {
+  background: #ff3b30;
+  margin-top: 8px;
+}
+
+.bar {
+  background: #007aff;
+  color: white;
+  margin: 6px 0;
+  padding: 8px;
+  border-radius: 6px;
+}
