@@ -20,6 +20,18 @@ function addData() {
 
 function saveData() {
   localStorage.setItem("kakeibo", JSON.stringify(data));
+
+  const now = new Date();
+
+  const updateTime =
+    now.getFullYear() + "/" +
+    String(now.getMonth() + 1).padStart(2, "0") + "/" +
+    String(now.getDate()).padStart(2, "0") + " " +
+    String(now.getHours()).padStart(2, "0") + ":" +
+    String(now.getMinutes()).padStart(2, "0") + ":" +
+    String(now.getSeconds()).padStart(2, "0");
+
+  localStorage.setItem("lastUpdated", updateTime);
 }
 
 function deleteData(index) {
@@ -54,6 +66,9 @@ function getPreviousMonth(monthText) {
 }
 
 function showData() {
+  const lastUpdated =
+  document.getElementById("lastUpdated");
+lastUpdated.textContent = localStorage.getItem("lastUpdated") || "未更新";
   const list = document.getElementById("list");
   const income = document.getElementById("income");
   const expense = document.getElementById("expense");
