@@ -7,9 +7,18 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
   <h1>家計簿アプリ</h1>
 
+  <!-- 表示月選択 -->
   <div class="card">
+    <label for="selectedMonth">表示月を選択</label>
+    <input id="selectedMonth" type="month">
+  </div>
+
+  <!-- 入力 -->
+  <div class="card">
+
     <input id="date" type="date">
 
     <select id="type">
@@ -34,36 +43,70 @@
     </select>
 
     <input id="item" placeholder="内容">
-    <input id="amount" type="number" placeholder="金額">
 
-    <button onclick="addData()">追加</button>
-    <button onclick="downloadCSV()">CSV出力</button>
+    <input
+      id="amount"
+      type="number"
+      placeholder="金額"
+    >
+
+    <button onclick="addData()">
+      追加
+    </button>
+
+    <button onclick="downloadCSV()">
+      CSV出力
+    </button>
+
   </div>
-  <div class="card">
-  <label for="selectedMonth">表示月を選択</label>
-  <input id="selectedMonth" type="month" onchange="showData()">
-</div>
+
+  <!-- 集計 -->
   <div class="summary">
-    <p>今月の収入：<span id="income">0</span>円</p>
-    <p>今月の支出：<span id="expense">0</span>円</p>
-    <p>共通口座への入金予定額：<span id="balance">0</span>円</p>
+
+    <p>
+      今月の収入：
+      <span id="income">0</span>円
+    </p>
+
+    <p>
+      今月の支出：
+      <span id="expense">0</span>円
+    </p>
+
+    <p>
+      共通口座への入金予定額：
+      <span id="balance">0</span>円
+    </p>
 
     <hr>
 
     <h2>月末の共通口座入金額</h2>
-    <p>夫の入金額：<span id="husbandDeposit">0</span>円</p>
-    <p>妻の入金額：<span id="wifeDeposit">0</span>円</p>
+
+    <p>
+      夫の入金額：
+      <span id="husbandDeposit">0</span>円
+    </p>
+
+    <p>
+      妻の入金額：
+      <span id="wifeDeposit">0</span>円
+    </p>
 
     <h2>月ごとの入金一覧</h2>
+
     <div id="monthlyDeposits"></div>
+
   </div>
 
+  <!-- カテゴリ別支出グラフ -->
   <h2>カテゴリ別支出グラフ</h2>
   <div id="graph"></div>
 
+  <!-- 一覧 -->
   <h2>一覧</h2>
   <ul id="list"></ul>
 
   <script src="app.js"></script>
+
 </body>
 </html>
