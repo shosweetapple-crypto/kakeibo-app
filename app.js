@@ -79,27 +79,43 @@ function showData() {
     }
 
     if (d.type === "収入") {
-      if (d.person === "夫") months[dataMonth].husbandIncome += d.amount;
-      if (d.person === "妻") months[dataMonth].wifeIncome += d.amount;
+      if (d.person === "夫") {
+        months[dataMonth].husbandIncome += d.amount;
+      }
+
+      if (d.person === "妻") {
+        months[dataMonth].wifeIncome += d.amount;
+      }
     }
 
     if (dataMonth === thisMonth) {
       if (d.type === "収入") {
         incomeTotal += d.amount;
 
-        if (d.person === "夫") husbandIncome += d.amount;
-        if (d.person === "妻") wifeIncome += d.amount;
+        if (d.person === "夫") {
+          husbandIncome += d.amount;
+        }
+
+        if (d.person === "妻") {
+          wifeIncome += d.amount;
+        }
       }
 
       if (d.type === "支出") {
         expenseTotal += d.amount;
-        categoryTotal[d.category] = (categoryTotal[d.category] || 0) + d.amount;
+        categoryTotal[d.category] =
+          (categoryTotal[d.category] || 0) + d.amount;
       }
     }
 
     if (dataMonth === lastMonth && d.type === "支出") {
-      if (d.person === "夫") husbandLastExpense += d.amount;
-      if (d.person === "妻") wifeLastExpense += d.amount;
+      if (d.person === "夫") {
+        husbandLastExpense += d.amount;
+      }
+
+      if (d.person === "妻") {
+        wifeLastExpense += d.amount;
+      }
     }
 
     const li = document.createElement("li");
@@ -112,15 +128,18 @@ function showData() {
     list.appendChild(li);
   });
 
-  income.textContent = incomeTotal;
-  expense.textContent = expenseTotal;
-  balance.textContent = incomeTotal - expenseTotal;
-
   const husbandAmount = husbandIncome / 2 - husbandLastExpense;
   const wifeAmount = wifeIncome / 2 - wifeLastExpense;
+  const totalDeposit = husbandAmount + wifeAmount;
+
+  income.textContent = incomeTotal;
+  expense.textContent = expenseTotal;
 
   husbandDeposit.textContent = husbandAmount;
   wifeDeposit.textContent = wifeAmount;
+
+  // B案：今月の残り＝共通口座への入金予定額
+  balance.textContent = totalDeposit;
 
   const sortedMonths = Object.keys(months).sort();
 
@@ -132,20 +151,31 @@ function showData() {
 
     data.forEach(d => {
       if (getMonth(d.date) === prevMonth && d.type === "支出") {
-        if (d.person === "夫") prevHusbandExpense += d.amount;
-        if (d.person === "妻") prevWifeExpense += d.amount;
+        if (d.person === "夫") {
+          prevHusbandExpense += d.amount;
+        }
+
+        if (d.person === "妻") {
+          prevWifeExpense += d.amount;
+        }
       }
     });
 
-    const husband = months[month].husbandIncome / 2 - prevHusbandExpense;
-    const wife = months[month].wifeIncome / 2 - prevWifeExpense;
+    const husband =
+      months[month].husbandIncome / 2 - prevHusbandExpense;
+
+    const wife =
+      months[month].wifeIncome / 2 - prevWifeExpense;
+
+    const total = husband + wife;
 
     const div = document.createElement("div");
     div.className = "card";
     div.innerHTML = `
       <strong>${month}</strong><br>
       夫の入金額：${husband}円<br>
-      妻の入金額：${wife}円
+      妻の入金額：${wife}円<br>
+      合計入金額：${total}円
     `;
     monthlyDeposits.appendChild(div);
   });
