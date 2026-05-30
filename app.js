@@ -28,24 +28,33 @@ function deleteData(index) {
   showData();
 }
 
+function getMonth(date) {
+  return date.slice(0, 7);
+}
+
+function getPreviousMonth(month) {
+  const [year, m] = month.split("-").map(Number);
+  const d = new Date(year, m - 2, 1);
+  return d.toISOString().slice(0, 7);
+}
+
 function showData() {
   const list = document.getElementById("list");
   const income = document.getElementById("income");
   const expense = document.getElementById("expense");
   const balance = document.getElementById("balance");
   const graph = document.getElementById("graph");
-
   const husbandDeposit = document.getElementById("husbandDeposit");
   const wifeDeposit = document.getElementById("wifeDeposit");
+  const monthlyDeposits = document.getElementById("monthlyDeposits");
 
   list.innerHTML = "";
   graph.innerHTML = "";
+  monthlyDeposits.innerHTML = "";
 
   const now = new Date();
   const thisMonth = now.toISOString().slice(0, 7);
-
-  const lastMonthDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-  const lastMonth = lastMonthDate.toISOString().slice(0, 7);
+  const lastMonth = getPreviousMonth(thisMonth);
 
   let incomeTotal = 0;
   let expenseTotal = 0;
@@ -54,38 +63,43 @@ function showData() {
   let husbandIncome = 0;
   let wifeIncome = 0;
 
-  let husbandLastPayment = 0;
-  let wifeLastPayment = 0;
+  let husbandLastExpense = 0;
+  let wifeLastExpense = 0;
+
+  const months = {};
 
   data.forEach((d, index) => {
-    const dataMonth = d.date.slice(0, 7);
+    const dataMonth = getMonth(d.date);
+
+    if (!months[dataMonth]) {
+      months[dataMonth] = {
+        husbandIncome: 0,
+        wifeIncome: 0
+      };
+    }
+
+    if (d.type === "収入") {
+      if (d.person === "夫") months[dataMonth].husbandIncome += d.amount;
+      if (d.person === "妻") months[dataMonth].wifeIncome += d.amount;
+    }
 
     if (dataMonth === thisMonth) {
       if (d.type === "収入") {
         incomeTotal += d.amount;
 
-        if (d.person === "夫") {
-          husbandIncome += d.amount;
-        }
+        if (d.person === "夫") husbandIncome += d.amount;
+        if (d.person === "妻") wifeIncome += d.amount;
+      }
 
-        if (d.person === "妻") {
-          wifeIncome += d.amount;
-        }
-
-      } else {
+      if (d.type === "支出") {
         expenseTotal += d.amount;
         categoryTotal[d.category] = (categoryTotal[d.category] || 0) + d.amount;
       }
     }
 
     if (dataMonth === lastMonth && d.type === "支出") {
-      if (d.person === "夫") {
-        husbandLastPayment += d.amount;
-      }
-
-      if (d.person === "妻") {
-        wifeLastPayment += d.amount;
-      }
+      if (d.person === "夫") husbandLastExpense += d.amount;
+      if (d.person === "妻") wifeLastExpense += d.amount;
     }
 
     const li = document.createElement("li");
@@ -102,11 +116,39 @@ function showData() {
   expense.textContent = expenseTotal;
   balance.textContent = incomeTotal - expenseTotal;
 
-  const husbandAmount = husbandIncome / 2 - husbandLastPayment;
-  const wifeAmount = wifeIncome / 2 - wifeLastPayment;
+  const husbandAmount = husbandIncome / 2 - husbandLastExpense;
+  const wifeAmount = wifeIncome / 2 - wifeLastExpense;
 
   husbandDeposit.textContent = husbandAmount;
   wifeDeposit.textContent = wifeAmount;
+
+  const sortedMonths = Object.keys(months).sort();
+
+  sortedMonths.forEach(month => {
+    const prevMonth = getPreviousMonth(month);
+
+    let prevHusbandExpense = 0;
+    let prevWifeExpense = 0;
+
+    data.forEach(d => {
+      if (getMonth(d.date) === prevMonth && d.type === "支出") {
+        if (d.person === "夫") prevHusbandExpense += d.amount;
+        if (d.person === "妻") prevWifeExpense += d.amount;
+      }
+    });
+
+    const husband = months[month].husbandIncome / 2 - prevHusbandExpense;
+    const wife = months[month].wifeIncome / 2 - prevWifeExpense;
+
+    const div = document.createElement("div");
+    div.className = "card";
+    div.innerHTML = `
+      <strong>${month}</strong><br>
+      夫の入金額：${husband}円<br>
+      妻の入金額：${wife}円
+    `;
+    monthlyDeposits.appendChild(div);
+  });
 
   const max = Math.max(...Object.values(categoryTotal), 1);
 
