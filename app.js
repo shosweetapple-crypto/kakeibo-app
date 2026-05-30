@@ -80,8 +80,7 @@ function nextMonth() {
 
 function showData() {
   const displayMonth = selectedMonth;
-  const previousMonthText = getPreviousMonth(displayMonth);
-
+  
   const currentMonthDisplay =
     document.getElementById("currentMonthDisplay");
 
@@ -109,8 +108,8 @@ function showData() {
   let husbandIncome = 0;
   let wifeIncome = 0;
 
-  let husbandPrevExpense = 0;
-  let wifePrevExpense = 0;
+let husbandExpense = 0;
+let wifeExpense = 0;
 
   data.forEach((d, index) => {
     const dataMonth = getMonth(d.date);
@@ -144,19 +143,28 @@ function showData() {
       list.appendChild(li);
     }
 
-    if (dataMonth === previousMonthText && d.type === "支出") {
-      if (d.person === "夫") {
-        husbandPrevExpense += d.amount;
-      }
+   if (
+  dataMonth === displayMonth &&
+  d.type === "支出"
+)
+{
+  if (d.person === "夫") {
+    husbandExpense += d.amount;
+  }
 
-      if (d.person === "妻") {
-        wifePrevExpense += d.amount;
-      }
-    }
+  if (d.person === "妻") {
+    wifeExpense += d.amount;
+  }
+}
   });
 
-  const husbandAmount = husbandIncome / 2 - husbandPrevExpense;
-  const wifeAmount = wifeIncome / 2 - wifePrevExpense;
+ const husbandAmount =
+  husbandIncome / 2 -
+  husbandExpense;
+
+const wifeAmount =
+  wifeIncome / 2 -
+  wifeExpense;
   const totalDeposit = husbandAmount + wifeAmount;
 
   income.textContent = incomeTotal;
