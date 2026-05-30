@@ -1,5 +1,3 @@
-let pieChart = null;
-let yearChart = null;
 let data = JSON.parse(localStorage.getItem("kakeibo")) || [];
 
 function addData() {
@@ -68,20 +66,28 @@ function getPreviousMonth(monthText) {
 }
 
 function showData() {
-  document.getElementById("recordCount").textContent =
-  data.length;
-  const lastUpdated =
-  document.getElementById("lastUpdated");
-lastUpdated.textContent = localStorage.getItem("lastUpdated") || "未更新";
+  const lastUpdated = document.getElementById("lastUpdated");
+  const recordCount = document.getElementById("recordCount");
   const list = document.getElementById("list");
   const income = document.getElementById("income");
   const expense = document.getElementById("expense");
   const balance = document.getElementById("balance");
-   const husbandDeposit = document.getElementById("husbandDeposit");
+  const graph = document.getElementById("graph");
+  const husbandDeposit = document.getElementById("husbandDeposit");
   const wifeDeposit = document.getElementById("wifeDeposit");
   const monthlyDeposits = document.getElementById("monthlyDeposits");
 
+  if (lastUpdated) {
+    lastUpdated.textContent =
+      localStorage.getItem("lastUpdated") || "未更新";
+  }
+
+  if (recordCount) {
+    recordCount.textContent = data.length;
+  }
+
   list.innerHTML = "";
+  graph.innerHTML = "";
   monthlyDeposits.innerHTML = "";
 
   const thisMonth = getThisMonth();
@@ -210,9 +216,18 @@ lastUpdated.textContent = localStorage.getItem("lastUpdated") || "未更新";
     monthlyDeposits.appendChild(div);
   });
 
+  const max = Math.max(...Object.values(categoryTotal), 1);
 
-  showPieChart(categoryTotal);
-showYearChart();
+  for (let category in categoryTotal) {
+    const bar = document.createElement("div");
+    const width = categoryTotal[category] / max * 100;
+
+    bar.className = "bar";
+    bar.style.width = width + "%";
+    bar.textContent = `${category}：${categoryTotal[category]}円`;
+
+    graph.appendChild(bar);
+  }
 }
 
 function downloadCSV() {
@@ -230,87 +245,3 @@ function downloadCSV() {
 }
 
 showData();
-function showPieChart(categoryTotal) {
-  const ctx = document.getElementById("pieChart");
-
-  if (!ctx) return;
-
-  if (pieChart) {
-    pieChart.destroy();
-  }
-
-  const labels = Object.keys(categoryTotal);
-  const values = Object.values(categoryTotal);
-
-  pieChart = new Chart(ctx, {
-    type: "pie",
-    data: {
-      labels: labels,
-      datasets: [{
-        data: values
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        title: {
-          display: true,
-          text: "今月のカテゴリ別出費"
-        }
-      }
-    }
-  });
-}
-
-function showYearChart() {
-  const ctx = document.getElementById("yearChart");
-
-  if (!ctx) return;
-
-  if (yearChart) {
-    yearChart.destroy();
-  }
-
-  const thisYear = new Date().getFullYear();
-  const monthlyExpense = Array(12).fill(0);
-
-  data.forEach(d => {
-    if (d.type === "支出") {
-      const date = new Date(d.date);
-      const year = date.getFullYear();
-      const month = date.getMonth();
-
-      if (year === thisYear) {
-        monthlyExpense[month] += d.amount;
-      }
-    }
-  });
-
-  yearChart = new Chart(ctx, {
-    type: "bar",
-    data: {
-      labels: [
-        "1月", "2月", "3月", "4月", "5月", "6月",
-        "7月", "8月", "9月", "10月", "11月", "12月"
-      ],
-      datasets: [{
-        label: "月別出費",
-        data: monthlyExpense
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        title: {
-          display: true,
-          text: "年間の月別出費"
-        }
-      },
-      scales: {
-        y: {
-          beginAtZero: true
-        }
-      }
-    }
-  });
-}
