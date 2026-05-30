@@ -1,3 +1,5 @@
+let pieChart = null;
+let yearChart = null;
 let data = JSON.parse(localStorage.getItem("kakeibo")) || [];
 
 function addData() {
@@ -218,6 +220,8 @@ lastUpdated.textContent = localStorage.getItem("lastUpdated") || "未更新";
     bar.textContent = `${category}：${categoryTotal[category]}円`;
     graph.appendChild(bar);
   }
+  showPieChart(categoryTotal);
+showYearChart();
 }
 
 function downloadCSV() {
@@ -235,3 +239,87 @@ function downloadCSV() {
 }
 
 showData();
+function showPieChart(categoryTotal) {
+  const ctx = document.getElementById("pieChart");
+
+  if (!ctx) return;
+
+  if (pieChart) {
+    pieChart.destroy();
+  }
+
+  const labels = Object.keys(categoryTotal);
+  const values = Object.values(categoryTotal);
+
+  pieChart = new Chart(ctx, {
+    type: "pie",
+    data: {
+      labels: labels,
+      datasets: [{
+        data: values
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        title: {
+          display: true,
+          text: "今月のカテゴリ別出費"
+        }
+      }
+    }
+  });
+}
+
+function showYearChart() {
+  const ctx = document.getElementById("yearChart");
+
+  if (!ctx) return;
+
+  if (yearChart) {
+    yearChart.destroy();
+  }
+
+  const thisYear = new Date().getFullYear();
+  const monthlyExpense = Array(12).fill(0);
+
+  data.forEach(d => {
+    if (d.type === "支出") {
+      const date = new Date(d.date);
+      const year = date.getFullYear();
+      const month = date.getMonth();
+
+      if (year === thisYear) {
+        monthlyExpense[month] += d.amount;
+      }
+    }
+  });
+
+  yearChart = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels: [
+        "1月", "2月", "3月", "4月", "5月", "6月",
+        "7月", "8月", "9月", "10月", "11月", "12月"
+      ],
+      datasets: [{
+        label: "月別出費",
+        data: monthlyExpense
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        title: {
+          display: true,
+          text: "年間の月別出費"
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  });
+}
