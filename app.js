@@ -54,6 +54,19 @@ function getPreviousMonth(monthText) {
 }
 
 function showData() {
+  const selectedMonthInput = document.getElementById("selectedMonth");
+
+  if (selectedMonthInput && !selectedMonthInput.value) {
+    selectedMonthInput.value = getThisMonth();
+  }
+
+  const displayMonth =
+    selectedMonthInput && selectedMonthInput.value
+      ? selectedMonthInput.value
+      : getThisMonth();
+
+  const previousMonth = getPreviousMonth(displayMonth);
+
   const list = document.getElementById("list");
   const income = document.getElementById("income");
   const expense = document.getElementById("expense");
@@ -67,9 +80,6 @@ function showData() {
   graph.innerHTML = "";
   monthlyDeposits.innerHTML = "";
 
-  const thisMonth = getThisMonth();
-  const lastMonth = getPreviousMonth(thisMonth);
-
   let incomeTotal = 0;
   let expenseTotal = 0;
   let categoryTotal = {};
@@ -77,32 +87,13 @@ function showData() {
   let husbandIncome = 0;
   let wifeIncome = 0;
 
-  let husbandLastExpense = 0;
-  let wifeLastExpense = 0;
-
-  const months = {};
+  let husbandPrevExpense = 0;
+  let wifePrevExpense = 0;
 
   data.forEach((d, index) => {
     const dataMonth = getMonth(d.date);
 
-    if (!months[dataMonth]) {
-      months[dataMonth] = {
-        husbandIncome: 0,
-        wifeIncome: 0
-      };
-    }
-
-    if (d.type === "収入") {
-      if (d.person === "夫") {
-        months[dataMonth].husbandIncome += d.amount;
-      }
-
-      if (d.person === "妻") {
-        months[dataMonth].wifeIncome += d.amount;
-      }
-    }
-
-    if (dataMonth === thisMonth) {
+    if (dataMonth === displayMonth) {
       if (d.type === "収入") {
         incomeTotal += d.amount;
 
@@ -120,78 +111,47 @@ function showData() {
         categoryTotal[d.category] =
           (categoryTotal[d.category] || 0) + d.amount;
       }
+
+      const li = document.createElement("li");
+      li.innerHTML = `
+        ${d.date}<br>
+        ${d.type} / ${d.category} / ${d.person}<br>
+        ${d.item}：${d.amount}円
+        <button class="delete" onclick="deleteData(${index})">削除</button>
+      `;
+      list.appendChild(li);
     }
 
-    if (dataMonth === lastMonth && d.type === "支出") {
+    if (dataMonth === previousMonth && d.type === "支出") {
       if (d.person === "夫") {
-        husbandLastExpense += d.amount;
+        husbandPrevExpense += d.amount;
       }
 
       if (d.person === "妻") {
-        wifeLastExpense += d.amount;
+        wifePrevExpense += d.amount;
       }
     }
-
-    const li = document.createElement("li");
-    li.innerHTML = `
-      ${d.date}<br>
-      ${d.type} / ${d.category} / ${d.person}<br>
-      ${d.item}：${d.amount}円
-      <button class="delete" onclick="deleteData(${index})">削除</button>
-    `;
-    list.appendChild(li);
   });
 
-  const husbandAmount = husbandIncome / 2 - husbandLastExpense;
-  const wifeAmount = wifeIncome / 2 - wifeLastExpense;
+  const husbandAmount = husbandIncome / 2 - husbandPrevExpense;
+  const wifeAmount = wifeIncome / 2 - wifePrevExpense;
   const totalDeposit = husbandAmount + wifeAmount;
 
   income.textContent = incomeTotal;
   expense.textContent = expenseTotal;
-
   husbandDeposit.textContent = husbandAmount;
   wifeDeposit.textContent = wifeAmount;
-
   balance.textContent = totalDeposit;
 
-  const sortedMonths = Object.keys(months).sort();
-
-  sortedMonths.forEach(month => {
-    const prevMonth = getPreviousMonth(month);
-
-    let prevHusbandExpense = 0;
-    let prevWifeExpense = 0;
-
-    data.forEach(d => {
-      if (getMonth(d.date) === prevMonth && d.type === "支出") {
-        if (d.person === "夫") {
-          prevHusbandExpense += d.amount;
-        }
-
-        if (d.person === "妻") {
-          prevWifeExpense += d.amount;
-        }
-      }
-    });
-
-    const husband =
-      months[month].husbandIncome / 2 - prevHusbandExpense;
-
-    const wife =
-      months[month].wifeIncome / 2 - prevWifeExpense;
-
-    const total = husband + wife;
-
-    const div = document.createElement("div");
-    div.className = "card";
-    div.innerHTML = `
-      <strong>${month}</strong><br>
-      夫の入金額：${husband}円<br>
-      妻の入金額：${wife}円<br>
-      合計入金額：${total}円
-    `;
-    monthlyDeposits.appendChild(div);
-  });
+  const div = document.createElement("div");
+  div.className = "card";
+  div.innerHTML = `
+    <strong>${displayMonth}</strong><br>
+    夫の入金額：${husbandAmount}円<br>
+    妻の入金額：${wifeAmount}円<br>
+    合計入金額：${totalDeposit}円
+  `;
+  monthlyDeposits.appendChild(div);
 
   const max = Math.max(...Object.values(categoryTotal), 1);
 
