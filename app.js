@@ -68,6 +68,8 @@ function getPreviousMonth(monthText) {
 }
 
 function showData() {
+  document.getElementById("recordCount").textContent =
+  data.length;
   const lastUpdated =
   document.getElementById("lastUpdated");
 lastUpdated.textContent = localStorage.getItem("lastUpdated") || "未更新";
@@ -75,13 +77,11 @@ lastUpdated.textContent = localStorage.getItem("lastUpdated") || "未更新";
   const income = document.getElementById("income");
   const expense = document.getElementById("expense");
   const balance = document.getElementById("balance");
-  const graph = document.getElementById("graph");
-  const husbandDeposit = document.getElementById("husbandDeposit");
+   const husbandDeposit = document.getElementById("husbandDeposit");
   const wifeDeposit = document.getElementById("wifeDeposit");
   const monthlyDeposits = document.getElementById("monthlyDeposits");
 
   list.innerHTML = "";
-  graph.innerHTML = "";
   monthlyDeposits.innerHTML = "";
 
   const thisMonth = getThisMonth();
@@ -210,16 +210,7 @@ lastUpdated.textContent = localStorage.getItem("lastUpdated") || "未更新";
     monthlyDeposits.appendChild(div);
   });
 
-  const max = Math.max(...Object.values(categoryTotal), 1);
 
-  for (let category in categoryTotal) {
-    const bar = document.createElement("div");
-    const width = categoryTotal[category] / max * 100;
-    bar.className = "bar";
-    bar.style.width = width + "%";
-    bar.textContent = `${category}：${categoryTotal[category]}円`;
-    graph.appendChild(bar);
-  }
   showPieChart(categoryTotal);
 showYearChart();
 }
