@@ -35,22 +35,56 @@ function showData() {
   const balance = document.getElementById("balance");
   const graph = document.getElementById("graph");
 
+  const husbandDeposit = document.getElementById("husbandDeposit");
+  const wifeDeposit = document.getElementById("wifeDeposit");
+
   list.innerHTML = "";
   graph.innerHTML = "";
 
-  const thisMonth = new Date().toISOString().slice(0, 7);
+  const now = new Date();
+  const thisMonth = now.toISOString().slice(0, 7);
+
+  const lastMonthDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+  const lastMonth = lastMonthDate.toISOString().slice(0, 7);
 
   let incomeTotal = 0;
   let expenseTotal = 0;
   let categoryTotal = {};
 
+  let husbandIncome = 0;
+  let wifeIncome = 0;
+
+  let husbandLastPayment = 0;
+  let wifeLastPayment = 0;
+
   data.forEach((d, index) => {
-    if (d.date.slice(0, 7) === thisMonth) {
+    const dataMonth = d.date.slice(0, 7);
+
+    if (dataMonth === thisMonth) {
       if (d.type === "収入") {
         incomeTotal += d.amount;
+
+        if (d.person === "夫") {
+          husbandIncome += d.amount;
+        }
+
+        if (d.person === "妻") {
+          wifeIncome += d.amount;
+        }
+
       } else {
         expenseTotal += d.amount;
         categoryTotal[d.category] = (categoryTotal[d.category] || 0) + d.amount;
+      }
+    }
+
+    if (dataMonth === lastMonth && d.type === "支出") {
+      if (d.person === "夫") {
+        husbandLastPayment += d.amount;
+      }
+
+      if (d.person === "妻") {
+        wifeLastPayment += d.amount;
       }
     }
 
@@ -67,6 +101,12 @@ function showData() {
   income.textContent = incomeTotal;
   expense.textContent = expenseTotal;
   balance.textContent = incomeTotal - expenseTotal;
+
+  const husbandAmount = husbandIncome / 2 - husbandLastPayment;
+  const wifeAmount = wifeIncome / 2 - wifeLastPayment;
+
+  husbandDeposit.textContent = husbandAmount;
+  wifeDeposit.textContent = wifeAmount;
 
   const max = Math.max(...Object.values(categoryTotal), 1);
 
