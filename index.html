@@ -11,10 +11,21 @@
   <h1>家計簿アプリ</h1>
 
   <!-- 表示月選択 -->
-  <div class="card">
-    <label for="selectedMonth">表示月を選択</label>
-    <input id="selectedMonth" type="month">
-  </div>
+ <div class="card">
+
+  <button onclick="previousMonth()">
+    ◀ 前月
+  </button>
+
+  <h2 id="currentMonthDisplay">
+    2026-05
+  </h2>
+
+  <button onclick="nextMonth()">
+    次月 ▶
+  </button>
+
+</div>
 
   <!-- 入力 -->
   <div class="card">
