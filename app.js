@@ -1,4 +1,5 @@
 let data = JSON.parse(localStorage.getItem("kakeibo")) || [];
+let selectedMonth = getThisMonth();
 
 function addData() {
   const date = document.getElementById("date").value;
@@ -53,19 +54,36 @@ function getPreviousMonth(monthText) {
   return `${prevYear}-${String(prevMonth).padStart(2, "0")}`;
 }
 
-function showData() {
-  const selectedMonthInput = document.getElementById("selectedMonth");
+function getNextMonth(monthText) {
+  const [year, month] = monthText.split("-").map(Number);
 
-  if (selectedMonthInput && !selectedMonthInput.value) {
-    selectedMonthInput.value = getThisMonth();
+  let nextYear = year;
+  let nextMonth = month + 1;
+
+  if (nextMonth === 13) {
+    nextYear += 1;
+    nextMonth = 1;
   }
 
-  const displayMonth =
-    selectedMonthInput && selectedMonthInput.value
-      ? selectedMonthInput.value
-      : getThisMonth();
+  return `${nextYear}-${String(nextMonth).padStart(2, "0")}`;
+}
 
-  const previousMonth = getPreviousMonth(displayMonth);
+function previousMonth() {
+  selectedMonth = getPreviousMonth(selectedMonth);
+  showData();
+}
+
+function nextMonth() {
+  selectedMonth = getNextMonth(selectedMonth);
+  showData();
+}
+
+function showData() {
+  const displayMonth = selectedMonth;
+  const previousMonthText = getPreviousMonth(displayMonth);
+
+  const currentMonthDisplay =
+    document.getElementById("currentMonthDisplay");
 
   const list = document.getElementById("list");
   const income = document.getElementById("income");
@@ -75,6 +93,10 @@ function showData() {
   const husbandDeposit = document.getElementById("husbandDeposit");
   const wifeDeposit = document.getElementById("wifeDeposit");
   const monthlyDeposits = document.getElementById("monthlyDeposits");
+
+  if (currentMonthDisplay) {
+    currentMonthDisplay.textContent = displayMonth;
+  }
 
   list.innerHTML = "";
   graph.innerHTML = "";
@@ -122,7 +144,7 @@ function showData() {
       list.appendChild(li);
     }
 
-    if (dataMonth === previousMonth && d.type === "支出") {
+    if (dataMonth === previousMonthText && d.type === "支出") {
       if (d.person === "夫") {
         husbandPrevExpense += d.amount;
       }
@@ -158,9 +180,11 @@ function showData() {
   for (let category in categoryTotal) {
     const bar = document.createElement("div");
     const width = categoryTotal[category] / max * 100;
+
     bar.className = "bar";
     bar.style.width = width + "%";
     bar.textContent = `${category}：${categoryTotal[category]}円`;
+
     graph.appendChild(bar);
   }
 }
@@ -172,23 +196,15 @@ function downloadCSV() {
     csv += `${d.date},${d.type},${d.category},${d.person},${d.item},${d.amount}\n`;
   });
 
-  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+  const blob = new Blob([csv], {
+    type: "text/csv;charset=utf-8"
+  });
+
   const link = document.createElement("a");
   link.href = URL.createObjectURL(blob);
   link.download = "kakeibo.csv";
   link.click();
 }
 
-window.addEventListener("load", function () {
-  const selectedMonthInput = document.getElementById("selectedMonth");
-
-  if (selectedMonthInput) {
-    selectedMonthInput.value = getThisMonth();
-
-    selectedMonthInput.addEventListener("change", function () {
-      showData();
-    });
-  }
-
-  showData();
-});
+selectedMonth = getThisMonth();
+showData();
